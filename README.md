@@ -1,5 +1,3 @@
-Below is a `README.md` file that explains the two solutions, their working, and why the second solution is better in terms of memory usage, space complexity, and time complexity.
-
 ---
 
 # Unique Four-Letter Sequences Extractor
