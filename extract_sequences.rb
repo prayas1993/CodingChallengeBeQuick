@@ -32,7 +32,7 @@ words.each do |word|
   end
 end
 
-# Write the sequences and words to their respective files in the correct order
+# Write the sequences and words to their respective files in the correct order as they were present in the dictionary
 File.open('sequences.txt', 'w') do |f|
   sequences.each { |entry| f.puts entry[:sequence] }
 end

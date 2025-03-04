@@ -5,7 +5,7 @@ This project contains two Ruby scripts that extract unique four-letter sequences
 - `sequences/sequences_optimized.txt`: Contains unique four-letter sequences.
 - `words/words_optimized.txt`: Lists the corresponding word for each sequence.
 
-Both solutions achieve the same goal but differ in their implementation and efficiency. Below is an explanation of how each solution works and why the second solution is more efficient.
+Both solutions achieve the same goal but differ in their implementation and efficiency. Below is an explanation of how each solution works and why the second solution is more efficient.Additionally, an object-oriented approach is provided for better modularity and reusability.
 
 ---
 
@@ -47,7 +47,7 @@ words.each do |word|
   end
 end
 
-# Write the sequences and words to their respective files in the correct order
+# Write the sequences and words to their respective files in the correct order as they were present in the dictionary
 File.open('sequences.txt', 'w') do |f|
   sequences.each { |entry| f.puts entry[:sequence] }
 end
@@ -175,3 +175,128 @@ words_file.close
 ## Conclusion
 
 While both solutions achieve the same goal, **Solution 2** is more efficient in terms of memory usage, space complexity, and time complexity. It is the preferred approach for processing large dictionary files.
+
+## Object-Oriented Approach
+
+For better modularity, reusability, and maintainability, the problem can also be solved using an **object-oriented approach**. Below is the class-based implementation:
+
+### Code Overview
+
+```ruby
+class SequenceExtractor
+  # Initialize the class with file paths
+  def initialize(dictionary_path, sequences_file_path, words_file_path)
+    @dictionary_path = dictionary_path
+    @sequences_file_path = sequences_file_path
+    @words_file_path = words_file_path
+    @sequences = {}
+  end
+
+  # Extract valid four-letter sequences from a word
+  def extract_sequences(word)
+    word_lower = word.downcase
+    return if word_lower.length < 4  # Skip words shorter than four characters
+
+    # Generate all possible four-letter sequences
+    (0..word_lower.length - 4).each do |i|
+      sequence = word_lower[i, 4]
+      # Check if the sequence consists solely of letters
+      if sequence.match?(/^[a-z]{4}$/)
+        if @sequences.key?(sequence)
+          # If the sequence already exists, mark it as non-unique
+          @sequences[sequence] = nil
+        else
+          # Add the sequence and its corresponding word to the hash
+          @sequences[sequence] = word
+        end
+      end
+    end
+  end
+
+  # Process the dictionary file
+  def process_dictionary
+    File.foreach(@dictionary_path) do |word|
+      word.chomp!  # Remove trailing newline character
+      extract_sequences(word)
+    end
+  end
+
+  # Write unique sequences and words to output files
+  def write_output_files
+    File.open(@sequences_file_path, 'w') do |sequences_file|
+      File.open(@words_file_path, 'w') do |words_file|
+        @sequences.each do |seq, word|
+          next if word.nil?  # Skip sequences marked as non-unique
+          sequences_file.puts(seq)
+          words_file.puts(word)
+        end
+      end
+    end
+  end
+
+  # Main method to execute the program
+  def run
+    process_dictionary
+    write_output_files
+    puts "Processing complete. Output files generated: #{@sequences_file_path}, #{@words_file_path}"
+  end
+end
+
+# Create an instance of the SequenceExtractor class and run the program
+dictionary_path = 'dictionary.txt'
+sequences_file_path = 'sequences_optimized.txt'
+words_file_path = 'words_optimized.txt'
+
+extractor = SequenceExtractor.new(dictionary_path, sequences_file_path, words_file_path)
+extractor.run
+```
+
+### How It Works
+
+1. **Initialization**:
+
+   - The `SequenceExtractor` class is initialized with paths to the dictionary file and output files.
+   - An empty hash (`@sequences`) is created to store sequences and their corresponding words.
+
+2. **Extract Sequences**:
+
+   - The `extract_sequences` method processes a single word to extract valid four-letter sequences.
+   - It updates the `@sequences` hash to track unique and non-unique sequences.
+
+3. **Process Dictionary**:
+
+   - The `process_dictionary` method reads the dictionary file line by line and calls `extract_sequences` for each word.
+
+4. **Write Output Files**:
+
+   - The `write_output_files` method writes unique sequences and their corresponding words to the output files.
+
+5. **Run the Program**:
+   - The `run` method orchestrates the program by calling `process_dictionary` and `write_output_files`.
+
+---
+
+# How to Run the Program
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/prayas1993/CodingChallengeBeQuick.git
+   cd CodingChallengeBeQuick
+   ```
+
+2. Ensure the dictionary file (`dictionary.txt`) is in the same directory.
+
+3. Run the script using any one of the commands:
+
+   ```bash
+   ruby extract_sequences_object_oriented.rb
+   ```
+
+   ```bash
+   ruby extract_sequences_optimized.rb
+   ```
+
+4. The output files (`sequences_optimized.txt` and `words_optimized.txt`) will be generated in the same directory.
+
+---
