@@ -1,5 +1,3 @@
----
-
 # Unique Four-Letter Sequences Extractor
 
 This project contains two Ruby scripts that extract unique four-letter sequences from words in a dictionary file. The scripts generate two output files:
